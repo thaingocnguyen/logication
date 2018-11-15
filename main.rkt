@@ -1,4 +1,5 @@
 #lang plai
+(require "./logication-library.rkt")
 
 ;; Syntax specification:
 ;;
