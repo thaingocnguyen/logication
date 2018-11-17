@@ -1,5 +1,6 @@
 #lang plai
 (require "./logication-library.rkt")
+(require pict)
 
 ;; Syntax specification:
 ;;
@@ -58,3 +59,21 @@
     [(list lhs 'XNOR rhs) (l-xnor (parse lhs) (parse rhs))]
     [(list 'NOT nexp) (l-not nexp)]
     [else (error "Invalid syntax!")]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; INTERPRETATION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; interp : Expr -> Image (pict)
+;; Generates a circuit diagram from a given logical expression
+
+(define (interp exp)
+  (type-case Expr exp
+    [id (name) (text (symbol->string name))]
+    [bvalue (v) (text (number->string v))]
+    [l-and (lhs rhs) (and-combine (interp lhs) (interp rhs))]
+    [else (error "")]))
+
+
+; needs to work on testing, can't use the procedure test to compare images 
+(test (interp (parse 'a)) (text (symbol->string 'a)))
+(test (interp (parse 1)) (text (number->string 1)))
+(test (interp (parse '(a AND b))) (text "placeholder"))
