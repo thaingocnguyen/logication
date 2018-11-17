@@ -6,10 +6,10 @@
                        (inset/clip (rectangle 30 15) 0 -1 0 0)) (/ (* 3 pi) 2)))
 
 ; Default output image
-(define output (text "output"))
+(define output (hc-append 3 (hline 30 1) (text "output")))
 
 ; Default circuit line 
-(define cline (hline 30 5))
+(define cline (hline 30 1))
 
 (define p1 (text "a"))
 (define p2 (text "b"))
@@ -30,4 +30,12 @@
               (hc-append 5 input2 cline))
    (hc-append 4
               (hc-append and-gate cline)
-              output)))
+              (text "output"))))
+
+; and-combine testing (look at the function above for the original)
+(define (and-combine2 input1 level1 input2 level2)
+  (hc-append 
+   (vl-append 2
+              (hc-append input1 (hline (* 30 level2) 1))
+              (hc-append input2 (hline (* 30 level1) 1)))
+              and-gate))

@@ -30,6 +30,9 @@
   [l-xnor (lhs Expr?) (rhs Expr?)]
   [l-not (nexp Expr?)])
 
+(define-type ExprXLevel
+  [vals (img pict?) (level number?)])
+
 (define *reserved-symbols* '(id AND OR NOT XOR NAND NOR XNOR))
 
 ;; valid-identifer? : any -> boolean
@@ -66,14 +69,31 @@
 ;; Generates a circuit diagram from a given logical expression
 
 (define (interp exp)
-  (type-case Expr exp
-    [id (name) (text (symbol->string name))]
-    [bvalue (v) (text (number->string v))]
-    [l-and (lhs rhs) (and-combine (interp lhs) (interp rhs))]
-    [else (error "")]))
+  (local [(define (interp exp level)
+            (error "Call helper instead"))
+          (define (helper exp level)
+            (type-case Expr exp
+              [id (name) (vals (text (symbol->string name)) level)]
+              [bvalue (v) (vals (text (number->string v)) level)]
+              ; use and-combine instead of and-combine2 if you want the original
+              [l-and (lhs rhs)
+                     (let* [(lv (helper lhs level))
+                            (lv-image (vals-img lv))
+                            (lv-level (vals-level lv))
+                            (rv (helper rhs level))
+                            (rv-image (vals-img rv))
+                            (rv-level (vals-level rv))]
+                     (vals (and-combine2 lv-image lv-level rv-image rv-level) (+ level 2)))]
+              [else (error "")]))]
+    (hc-append (vals-img (helper exp 1)) output)))
 
 
 ; needs to work on testing, can't use the procedure test to compare images 
-(test (interp (parse 'a)) (text (symbol->string 'a)))
-(test (interp (parse 1)) (text (number->string 1)))
-(test (interp (parse '(a AND b))) (text "placeholder"))
+;(test (interp (parse 'a)) (text (symbol->string 'a)))
+;(test (interp (parse 1)) (text (number->string 1)));
+;(test (interp (parse '(a AND b))) (text "test"))
+(interp (parse '(a AND (b AND c))))
+(interp (parse '((a AND b) AND c)))
+(interp (parse '((a AND b) AND (c AND d))))
+(interp (parse '(a AND (b AND (c AND d)))))
+(interp (parse '(((a AND b) AND c) AND d)))
