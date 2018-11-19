@@ -40,7 +40,7 @@
                                        (hc-append input2 (hline 30 1)))
                             (if (= level1 1)
                                 and-gate
-                                (scale and-gate (+ 1 (* (- level1 2) 0.26)))))]
+                                (scale and-gate (+ 1 (* (- level1 2) 0.45)))))]
         [(> level1 level2)
          (hc-append 
           (vl-append 2
@@ -48,7 +48,7 @@
                      (hc-append input2 (hline (* 30 level1) 1)))
           (if (= (max level1 level2) 1)
               and-gate
-              (scale and-gate (+ 1 (* (- (max level1 level2) 2) 0.26)))))]
+              (scale and-gate (+ 1 (* (- (max level1 level2) 2) 0.27)))))]
         [(< level1 level2)
          (hc-append 
           (vl-append 2
@@ -56,4 +56,4 @@
                      (hc-append input2 (hline (* 30 level1) 1)))
           (if (= (max level1 level2) 1)
               and-gate
-              (scale and-gate (+ 1 (* (- (max level1 level2) 2) 0.26)))))]))
+              (scale and-gate (+ 1 (* (- (max level1 level2) 2) 0.27)))))]))

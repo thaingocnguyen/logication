@@ -98,3 +98,4 @@
 (interp (parse '((a AND b) AND (c AND d))))
 (interp (parse '(a AND (b AND (c AND d)))))
 (interp (parse '(((a AND b) AND c) AND d)))
+(interp (parse '(((a AND b) AND (c AND d)) AND ((e AND f) AND (g AND h)))))
