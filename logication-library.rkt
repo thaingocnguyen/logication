@@ -1,35 +1,57 @@
 #lang plai
 (require pict)
 
+; Default output image
+(define output (hc-append 3 (hline 30 1) (text "output")))
+
 ; Added AND gate written by Ollie
 (define and-gate (rotate (vc-append (inset/clip (circle 30) 0 1 0  -15)
                        (inset/clip (rectangle 30 15) 0 -1 0 0)) (/ (* 3 pi) 2)))
+(define or-gate
+  (hc-append -5 (hc-append -15
+                 (inset/clip (circle 30) -15 0 0 0)
+                 (inset/clip (rectangle 15 30) -1 0 -1 0))
+  (hc-append (inset/clip (rectangle 15 30) -1 0 -1 0)
+             (inset/clip (circle 30) -15 0 0 0))))
+
+
+                           
+                    
 
 ; and-combine testing (look at the function above for the original)
-(define (and-combine2 input1 input2 level1 level2)
-  (cond [(= level1 level2) (hc-append 
-                            (vl-append 2
-                                       (hc-append input1 (hline 30 1))
-                                       (hc-append input2 (hline 30 1)))
-                            (if (= level1 1)
-                                and-gate
-                                (scale and-gate (+ 1 (* (- level1 2) 0.45)))))]
-        [(> level1 level2)
-         (hc-append 
-          (vl-append 2
-                     (hc-append input1 (hline (* 30 level2) 1))
-                     (hc-append input2 (hline (* 30 level1) 1)))
-          (if (= (max level1 level2) 1)
-              and-gate
-              (scale and-gate (+ 1 (* (- (max level1 level2) 2) 0.27)))))]
-        [(< level1 level2)
-         (hc-append 
-          (vl-append 2
-                     (hc-append input1 (hline (* 30 level2) 1))
-                     (hc-append input2 (hline (* 30 level1) 1)))
-          (if (= (max level1 level2) 1)
-              and-gate
-              (scale and-gate (+ 1 (* (- (max level1 level2) 2) 0.27)))))]))
+(define (and-combine input1 input2 level1 level2)
+  (if (= level1 level2)
+      (hc-append 
+       (vl-append 2
+                  (hc-append input1 (hline 30 1))
+                  (hc-append input2 (hline 30 1)))
+       (if (= level1 1)
+           and-gate
+           (scale and-gate (+ 1 (* (- level1 2) 0.45)))))
+      (hc-append 
+       (vl-append 2
+                  (hc-append input1 (hline (* 30 level2) 1))
+                  (hc-append input2 (hline (* 30 level1) 1)))
+       (if (= (max level1 level2) 1)
+           and-gate
+           (scale and-gate (+ 1 (* (- (max level1 level2) 2) 0.27)))))))
+
+(define (or-combine input1 input2 level1 level2)
+  (if (= level1 level2)
+      (hc-append 
+       (vl-append 2
+                  (hc-append input1 (hline 30 1))
+                  (hc-append input2 (hline 30 1)))
+       (if (= level1 1)
+           or-gate
+           (scale or-gate (+ 1 (* (- level1 2) 0.45)))))
+      (hc-append 
+       (vl-append 2
+                  (hc-append input1 (hline (* 30 level2) 1))
+                  (hc-append input2 (hline (* 30 level1) 1)))
+       (if (= (max level1 level2) 1)
+           or-gate
+           (scale or-gate (+ 1 (* (- (max level1 level2) 2) 0.27)))))))
 
 
 

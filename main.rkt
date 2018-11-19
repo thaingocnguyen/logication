@@ -83,7 +83,16 @@
                             (rv (helper rhs level))
                             (rv-image (vals-img rv))
                             (rv-level (vals-level rv))]
-                     (vals (and-combine2 lv-image rv-image lv-level rv-level)
+                     (vals (and-combine lv-image rv-image lv-level rv-level)
+                           (max (+ rv-level 2) (+ lv-level 2))))]
+              [l-or (lhs rhs)
+                     (let* [(lv (helper lhs level))
+                            (lv-image (vals-img lv))
+                            (lv-level (vals-level lv))
+                            (rv (helper rhs level))
+                            (rv-image (vals-img rv))
+                            (rv-level (vals-level rv))]
+                     (vals (or-combine lv-image rv-image lv-level rv-level)
                            (max (+ rv-level 2) (+ lv-level 2))))]
               [else (error "")]))]
     (hc-append (vals-img (helper exp 1)) output)))
@@ -99,3 +108,5 @@
 (interp (parse '(a AND (b AND (c AND d)))))
 (interp (parse '(((a AND b) AND c) AND d)))
 (interp (parse '(((a AND b) AND (c AND d)) AND ((e AND f) AND (g AND h)))))
+
+(interp (parse '(((a OR b) OR c) OR d)))
