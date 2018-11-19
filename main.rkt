@@ -83,7 +83,8 @@
                             (rv (helper rhs level))
                             (rv-image (vals-img rv))
                             (rv-level (vals-level rv))]
-                     (vals (and-combine2 lv-image lv-level rv-image rv-level) (+ level 2)))]
+                     (vals (and-combine2 lv-image rv-image lv-level rv-level)
+                           (max (+ rv-level 2) (+ lv-level 2))))]
               [else (error "")]))]
     (hc-append (vals-img (helper exp 1)) output)))
 

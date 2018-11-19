@@ -28,14 +28,32 @@
    (vc-append 5
               (hc-append 5 input1 cline)
               (hc-append 5 input2 cline))
-   (hc-append 4
+   (hc-append 5
               (hc-append and-gate cline)
               (text "output"))))
 
 ; and-combine testing (look at the function above for the original)
-(define (and-combine2 input1 level1 input2 level2)
-  (hc-append 
-   (vl-append 2
-              (hc-append input1 (hline (* 30 level2) 1))
-              (hc-append input2 (hline (* 30 level1) 1)))
-              and-gate))
+(define (and-combine2 input1 input2 level1 level2)
+  (cond [(= level1 level2) (hc-append 
+                            (vl-append 2
+                                       (hc-append input1 (hline 30 1))
+                                       (hc-append input2 (hline 30 1)))
+                            (if (= level1 1)
+                                and-gate
+                                (scale and-gate (+ 1 (* (- level1 2) 0.26)))))]
+        [(> level1 level2)
+         (hc-append 
+          (vl-append 2
+                     (hc-append input1 (hline (* 30 level2) 1))
+                     (hc-append input2 (hline (* 30 level1) 1)))
+          (if (= (max level1 level2) 1)
+              and-gate
+              (scale and-gate (+ 1 (* (- (max level1 level2) 2) 0.26)))))]
+        [(< level1 level2)
+         (hc-append 
+          (vl-append 2
+                     (hc-append input1 (hline (* 30 level2) 1))
+                     (hc-append input2 (hline (* 30 level1) 1)))
+          (if (= (max level1 level2) 1)
+              and-gate
+              (scale and-gate (+ 1 (* (- (max level1 level2) 2) 0.26)))))]))
