@@ -30,8 +30,8 @@
   [l-xnor (lhs Expr?) (rhs Expr?)]
   [l-not (nexp Expr?)])
 
-(define-type ExprXLevel
-  [vals (img pict?) (level number?)])
+(define-type ExprXResult
+  [vals (img pict?) (size number?)])
 
 (define *reserved-symbols* '(id AND OR NOT XOR NAND NOR XNOR))
 
@@ -69,51 +69,62 @@
 ;; Generates a circuit diagram from a given logical expression
 
 (define (interp exp)
-  (local [(define (interp exp level)
+  (local [(define (interp exp)
             (error "Call helper instead"))
-          (define (helper exp level)
+          (define (helper exp final input-size)
             (type-case Expr exp
-              [id (name) (vals (text (symbol->string name)) level)]
-              [bvalue (v) (vals (text (number->string v)) level)]
-              ; use and-combine instead of and-combine2 if you want the original
+              [id (name)
+                  (local [(define img (text (symbol->string name)))
+                          (define result (vl-append final img))
+                          (define size (pict-width img))]
+                    (vals result size))]
+              [bvalue (v)
+                      (local [(define img (text (number->string v)))
+                              (define result (vl-append final img))
+                              (define size (pict-width img))]
+                        (vals result size))]
               [l-and (lhs rhs)
-                     (let* [(lv (helper lhs level))
-                            (lv-image (vals-img lv))
-                            (lv-level (vals-level lv))
-                            (rv (helper rhs level))
-                            (rv-image (vals-img rv))
-                            (rv-level (vals-level rv))]
-                     (vals (and-combine lv-image rv-image lv-level rv-level)
-                           (max (+ rv-level 2) (+ lv-level 2))))]
-              [l-or (lhs rhs)
-                     (let* [(lv (helper lhs level))
-                            (lv-image (vals-img lv))
-                            (lv-level (vals-level lv))
-                            (rv (helper rhs level))
-                            (rv-image (vals-img rv))
-                            (rv-level (vals-level rv))]
-                     (vals (or-combine lv-image rv-image lv-level rv-level)
-                           (max (+ rv-level 2) (+ lv-level 2))))]
-              [l-not (exp)
-                     (local [(define nv (helper exp level))
-                             (define nv-image (vals-img nv))
-                             (define nv-level (vals-level nv))]
-                     (vals (not-combine nv-image) (+ nv-level 2)))]
+                     (local [(define lval (helper lhs final input-size))
+                             (define lval-img (vals-img lval))
+                             (define lval-size (vals-size lval))
+                             (define rval (helper rhs lval-img lval-size))
+                             (define rval-img (vals-img rval))
+                             (define rval-size (vals-size rval))
+                             (define result (hc-append final (hc-append (hc-append
+                                                        (vl-append (hline (max (- (pict-width rval-img) rval-size)
+                                                                               30)
+                                                                          1)
+                                                                   (hline (max (- (pict-width lval-img) lval-size)
+                                                                               30)
+                                                                          1))
+                                                        and-gate)
+                                                       (hline 30 1))))
+                             (define result-size (max lval-size rval-size))]
+                       (vals result result-size))]
               [else (error "")]))]
-    (hc-append (vals-img (helper exp 1)) output)))
+    (hc-append (vals-img (helper exp (blank) 0)) output)))
 
 
 ; needs to work on testing, can't use the procedure test to compare images 
 ;(test (interp (parse 'a)) (text (symbol->string 'a)))
 ;(test (interp (parse 1)) (text (number->string 1)));
 ;(test (interp (parse '(a AND b))) (text "test"))
-(interp (parse '(a AND (b AND c))))
-(interp (parse '((a AND b) AND c)))
-(interp (parse '((a AND b) AND (c AND d))))
-(interp (parse '(a AND (b AND (c AND d)))))
-(interp (parse '(((a AND b) AND c) AND d)))
-(interp (parse '(((a AND b) AND (c AND d)) AND ((e AND f) AND (g AND h)))))
+;(interp (parse '(a AND (b AND c))))
+;(interp (parse '((a AND b) AND c)))
+;(interp (parse '((a AND b) AND (c AND d))))
+;(interp (parse '(a AND (b AND (c AND d)))))
+;(interp (parse '(((a AND b) AND c) AND d)))
+;(interp (parse '(((a AND b) AND (c AND d)) AND ((e AND f) AND (g AND h)))))
+;(interp (parse '(((a OR b) OR c) OR d)))
+;(interp (parse '(NOT a)))
+;(interp (parse '((NOT a) AND b)))
 
-(interp (parse '(((a OR b) OR c) OR d)))
-(interp (parse '(NOT a)))
-(interp (parse '((NOT a) AND b)))
+; ================ EXAMPLES =======================
+(define (run exp)
+  (interp (parse exp)))
+
+(run 'a)
+(run 1)
+(run '(a AND b))
+(run '((a AND b) AND c))
+(run '(a AND (b AND c)))
