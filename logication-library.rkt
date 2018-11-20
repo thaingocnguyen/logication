@@ -5,15 +5,25 @@
 ; Default output image
 (define output (hc-append 3 (hline 30 1) (text "output")))
 
-; Added AND gate written by Ollie
-(define and-gate (rotate (vc-append (inset/clip (circle 30) 0 1 0  -15)
-                       (inset/clip (rectangle 30 15) 0 -1 0 0)) (/ (* 3 pi) 2)))
+; Added AND gate and OR gate written by Ollie
+(define and-gate (hc-append (inset/clip (rectangle 15 30) 0 0 -1 0)
+                            (inset/clip (circle 30) -15 0 0 0)))
+
 (define or-gate
-  (hc-append -5 (hc-append -15
-                 (inset/clip (circle 30) -15 0 0 0)
-                 (inset/clip (rectangle 15 30) -1 0 -1 0))
-  (hc-append (inset/clip (rectangle 15 30) -1 0 -1 0)
-             (inset/clip (circle 30) -15 0 0 0))))
+  (lc-superimpose (inset/clip (dc (λ (dc dx dy)
+                                    (define old-pen (send dc get-pen))
+                                    (send dc set-pen
+                                          (new pen% [width 1] [color "black"]))
+                                    (define path (new dc-path%))
+                                    (send path move-to 0 0)
+                                    (send path curve-to 0 0 20 0 30 15)
+                                    (send path curve-to 30 15 20 30 0 30)
+                                    (send path close)
+                                    (send dc draw-path path dx dy)
+                                    (send dc set-pen old-pen))
+                                  31 30)
+                              -1 0 0 0)
+                  (inset/clip (circle 30) -18 0 1 0)))
 
 
 (define not-gate
