@@ -60,7 +60,7 @@
     [(list lhs 'NAND rhs) (l-nand (parse lhs) (parse rhs))]
     [(list lhs 'NOR rhs) (l-nor (parse lhs) (parse rhs))]
     [(list lhs 'XNOR rhs) (l-xnor (parse lhs) (parse rhs))]
-    [(list 'NOT nexp) (l-not nexp)]
+    [(list 'NOT nexp) (l-not (parse nexp))]
     [else (error "Invalid syntax!")]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; INTERPRETATION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -94,6 +94,11 @@
                             (rv-level (vals-level rv))]
                      (vals (or-combine lv-image rv-image lv-level rv-level)
                            (max (+ rv-level 2) (+ lv-level 2))))]
+              [l-not (exp)
+                     (local [(define nv (helper exp level))
+                             (define nv-image (vals-img nv))
+                             (define nv-level (vals-level nv))]
+                     (vals (not-combine nv-image) (+ nv-level 2)))]
               [else (error "")]))]
     (hc-append (vals-img (helper exp 1)) output)))
 
@@ -110,3 +115,5 @@
 (interp (parse '(((a AND b) AND (c AND d)) AND ((e AND f) AND (g AND h)))))
 
 (interp (parse '(((a OR b) OR c) OR d)))
+(interp (parse '(NOT a)))
+(interp (parse '((NOT a) AND b)))

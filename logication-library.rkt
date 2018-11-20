@@ -1,4 +1,5 @@
 #lang plai
+(require racket/draw)	
 (require pict)
 
 ; Default output image
@@ -15,7 +16,40 @@
              (inset/clip (circle 30) -15 0 0 0))))
 
 
-                           
+(define not-gate
+  (hc-append (dc (λ (dc dx dy)
+        (define old-brush (send dc get-brush))
+        (define old-pen (send dc get-pen))
+        (send dc set-pen
+          (new pen% [width 1] [color "black"]))
+        (define path (new dc-path%))
+        (send path move-to 0 0)
+        (send path line-to 30 15)
+        (send path line-to 0 30)
+        (send path close)
+        (send dc draw-path path dx dy)
+        (send dc set-brush old-brush)
+        (send dc set-pen old-pen))
+    30 30)
+             (circle 6)))
+
+;(define or-gate
+;  (hc-append (dc (λ (dc dx dy)
+;        (define old-brush (send dc get-brush))
+;        (define old-pen (send dc get-pen))
+;        (send dc set-pen
+;          (new pen% [width 1] [color "black"]))
+;        (define path (new dc-path%))
+;        (send path move-to 0 0)
+;        (send path line-to 30 15)
+;        (send path line-to 0 30)
+;        (send path close)
+;        (send dc draw-path path dx dy)
+;        (send dc set-brush old-brush)
+;        (send dc set-pen old-pen))
+;    30 30)
+;             (circle 6)))
+;or-gate
                     
 
 ; and-combine testing (look at the function above for the original)
@@ -52,6 +86,11 @@
        (if (= (max level1 level2) 1)
            or-gate
            (scale or-gate (+ 1 (* (- (max level1 level2) 2) 0.27)))))))
+
+(define (not-combine input)
+  (hc-append (hc-append input (hline 30 1))
+             not-gate))
+        
 
 
 
