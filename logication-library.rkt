@@ -6,8 +6,20 @@
 (define output (hc-append 3 (hline 30 1) (text "output")))
 
 ; Added AND gate and OR gate written by Ollie
-(define and-gate (hc-append (inset/clip (rectangle 15 30) 0 0 -1 0)
-                            (inset/clip (circle 30) -15 0 0 0)))
+(define and-gate (dc (λ (dc dx dy)
+                       (define old-pen (send dc get-pen))
+                       (send dc set-pen
+                             (new pen% [width 1] [color "black"]))
+                       (define path (new dc-path%))
+                       (send path move-to 14 0)
+                       (send path line-to 0 0)
+                       (send path line-to 0 29)
+                       (send path line-to 14 29)
+                       (send path arc 0 0 29 29 (/ pi -2) (/ pi 2))
+                       (send path close)
+                       (send dc draw-path path dx dy)
+                       (send dc set-pen old-pen))
+                     30 30))
 
 (define or-gate
   (lc-superimpose (inset/clip (dc (λ (dc dx dy)
@@ -34,13 +46,13 @@
           (new pen% [width 1] [color "black"]))
         (define path (new dc-path%))
         (send path move-to 0 0)
-        (send path line-to 30 15)
+        (send path line-to 24 15)
         (send path line-to 0 30)
         (send path close)
         (send dc draw-path path dx dy)
         (send dc set-brush old-brush)
         (send dc set-pen old-pen))
-    30 30)
+    24 30)
              (circle 6)))
 
 ;(define or-gate
